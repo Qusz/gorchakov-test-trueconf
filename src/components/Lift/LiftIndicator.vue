@@ -24,10 +24,10 @@
 
 import { defineProps } from 'vue';
 
-const props = {
+const props = defineProps({
   nextFloor: Number,
   direction: String
-}
+});
 
 </script>
 
