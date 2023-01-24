@@ -6,8 +6,8 @@
         :floorNumber="floor"
       >
       </Floor>
+      <Lift class="floors__lift"></Lift>
     </div>
-    <Lift></Lift>
   </main>
 </template>
 
