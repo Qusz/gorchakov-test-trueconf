@@ -2,13 +2,13 @@
   <div class="lift-indicator">
     <div class="lift-indicator__wrapper">
       <div
-        v-show="direction === 'up'" 
+        v-show="movingDirection === 'up'" 
         class="lift-indicator__direction"
       >
         &#x2191;
       </div>
       <div
-        v-show="direction === 'down'" 
+        v-show="movingDirection === 'down'" 
         class="lift-indicator__direction"
       >
         &#x2193;
@@ -22,12 +22,10 @@
 
 <script setup>
 
-import { defineProps } from 'vue';
+import { inject } from 'vue';
 
-const props = defineProps({
-  nextFloor: Number,
-  direction: String
-});
+const nextFloor = inject('nextFloor');
+const movingDirection = inject('movingDirection');
 
 </script>
 
