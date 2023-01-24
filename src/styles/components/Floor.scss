@@ -1,0 +1,32 @@
+@use '../base/' as *;
+
+.floor {
+  height: $floor-height;
+
+  border-top: 1px solid blue;
+
+    &__wrapper {
+      display: grid;
+      grid-template-columns: $shaft-width 1fr;
+
+      height: 100%;
+
+    }
+
+    &__shaft {
+      border-inline: 3px solid $clr-secondary;
+    }
+
+    &__room {
+      padding-inline: 1rem;
+
+      display: flex;
+      flex-direction: column;
+      gap: .5em;
+
+        &-number {
+          font-size: 1.2rem;
+          font-weight: 600;
+        }
+    }
+}
