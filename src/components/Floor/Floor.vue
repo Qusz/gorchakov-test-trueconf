@@ -7,7 +7,10 @@
           {{ floorNumber }}
         </div>
         <div class="floor__room-button">
-          
+          <FloorCallButton
+            :class="{'is-active': status } "
+            @click="$emit('call')"
+          ></FloorCallButton>
         </div>
       </div>
     </div>
@@ -17,9 +20,10 @@
 <script setup>
 
 import { defineProps } from 'vue';
+import FloorCallButton from './FloorCallButton.vue';
 
 const props = defineProps({
-  floorNumber: String
+  floorNumber: Number
 });
 
 </script>
