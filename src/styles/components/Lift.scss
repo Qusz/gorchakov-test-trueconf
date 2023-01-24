@@ -1,0 +1,9 @@
+@use '../base/' as *;
+
+.lift {
+  height: $floor-height;
+  width: $shaft-width;
+
+  background-color: $clr-primary;
+  position: relative;
+}

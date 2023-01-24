@@ -1,10 +1,13 @@
 <template>
-  <div>
-
+  <div class="lift">
+    <LiftIndicator class="lift__indicator">      
+    </LiftIndicator>
   </div>
 </template>
 
 <script setup>
+
+import LiftIndicator from './LiftIndicator.vue';
 
 </script>
 

@@ -1,8 +1,12 @@
 <template>
   <main class="main">
     <div class="floors">
-      
+      <Floor
+        :floorNumber="5"
+      >
+      </Floor>
     </div>
+    <Lift></Lift>
   </main>
 </template>
 
