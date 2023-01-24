@@ -2,7 +2,8 @@
   <main class="main">
     <div class="floors">
       <Floor
-        :floorNumber="5"
+        v-for="floor, index in floors" :key="index"
+        :floorNumber="floor"
       >
       </Floor>
     </div>
@@ -14,6 +15,8 @@
 
 import Floor from '@/components/Floor/Floor.vue';
 import Lift from '@/components/Lift/Lift.vue';
+
+const floors = Array.from({length: 5}, (_, index) => index + 1).reverse();
 
 
 </script>
