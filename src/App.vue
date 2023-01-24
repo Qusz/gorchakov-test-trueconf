@@ -1,6 +1,8 @@
 <template>
   <main class="main">
-
+    <div class="floors">
+      
+    </div>
   </main>
 </template>
 
