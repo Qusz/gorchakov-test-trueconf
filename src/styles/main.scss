@@ -1,8 +1,6 @@
 @use './base/' as *;
 
-.main {
-  width: 100vw;
-  height: 100vh;
+body {
   background-color: $clr-bg;
 }
 
