@@ -6,4 +6,10 @@
 
   background-color: $clr-primary;
   position: relative;
+
+  overflow: hidden;
+
+    &__indicator {
+      margin: 20px auto 0 auto;
+    }
 }
