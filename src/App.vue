@@ -7,7 +7,7 @@
         @call="queue.addToQueue(floor)"
       >
       </Floor>
-      <Lift :style="lift" class="floors__lift"></Lift>
+      <Lift :style="lift" class="floors__lift" @transitionend="handleTransition"></Lift>
     </div>
   </main>
 </template>
@@ -26,7 +26,7 @@ class Queue {
 
   addToQueue(item) {
     this.queue.add(item);
-    console.log(this.queue);
+    // console.log(this.queue);
   }
 
   deleteFromQueue(item) {
@@ -121,6 +121,16 @@ const handleCall = (targetFloor) => {
 
   // console.log(status.value.operationTime);
   // console.log(status.value.liftStatus);
+}
+
+const handleTransition = (e) => {
+  switch(true) {
+    case e.propertyName === 'bottom':
+      console.log('bottom');
+      break;
+    case e.propertyName === 'opacity':
+      console.log('opacity');
+  }
 }
 
 const activeTimeout = () => {
