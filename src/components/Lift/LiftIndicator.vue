@@ -2,19 +2,19 @@
   <div class="lift-indicator">
     <div class="lift-indicator__wrapper">
       <div
-        v-show="movingDirection === 'up'" 
+        v-show="status.movingDirection === 'up'" 
         class="lift-indicator__direction"
       >
         &#x2191;
       </div>
       <div
-        v-show="movingDirection === 'down'" 
+        v-show="status.movingDirection === 'down'" 
         class="lift-indicator__direction"
       >
         &#x2193;
       </div>
       <div class="lift__indicator__target">
-        {{ nextFloor }}
+        {{ status.nextFloor }}
       </div>
     </div>
   </div>
@@ -24,8 +24,7 @@
 
 import { inject } from 'vue';
 
-const nextFloor = inject('nextFloor');
-const movingDirection = inject('movingDirection');
+const status = inject('status');
 
 </script>
 

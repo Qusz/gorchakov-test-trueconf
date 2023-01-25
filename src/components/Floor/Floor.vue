@@ -8,7 +8,7 @@
         </div>
         <div class="floor__room-button">
           <FloorCallButton
-            :class="{'is-active': liftStatus !== 'idle' } "
+            :class="{'is-active': status.liftStatus !== 'idle' } "
             @click="$emit('call')"
           ></FloorCallButton>
         </div>
@@ -26,7 +26,7 @@ const props = defineProps({
   floorNumber: Number
 });
 
-const liftStatus = inject('liftStatus');
+const status = inject('status');
 
 </script>
 

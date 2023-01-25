@@ -52,7 +52,7 @@ const floors = Array.from({length: amountOfFloors}, (_, index) => index + 1).rev
 // Floor height in px
 const floorHeight = 200;
 
-const status = ref({
+const status = reactive({
   currentFloor: 1,
   currentPosition: 0,
   nextFloor: null,
@@ -65,13 +65,13 @@ const queue = reactive(new Queue());
 
 const lift = computed(() => {
   return {
-    bottom: status.value.currentPosition,
-    transition: `bottom ${status.value.operationTime}s linear`
+    bottom: status.currentPosition,
+    transition: `bottom ${status.operationTime}s linear`
   }
 });
 
 watchEffect(() => {
-  if (!queue.queueIsEmpty() && status.value.liftStatus === 'idle') {
+  if (!queue.queueIsEmpty() && status.liftStatus === 'idle') {
     const iterator = queue.queue.values();
     const next = iterator.next();
 
@@ -89,42 +89,40 @@ const moveLift = (currentFloor, targetFloor) => {
   // Floor difference always must be positive
   const floorDifference = Math.abs(targetFloor - currentFloor);
   // 1 floor per second
-  status.value.operationTime = floorDifference;
+  status.operationTime = floorDifference;
   // Lift positioning
-  status.value.currentPosition = `${(targetFloor - 1) * floorHeight}px`;
+  status.currentPosition = `${(targetFloor - 1) * floorHeight}px`;
 }
 
 const handleCall = (targetFloor) => {
-  if (targetFloor === status.value.currentFloor) {
+  if (targetFloor === status.currentFloor) {
     queue.deleteFromQueue(targetFloor);
     return;
   };
 
-  status.value.liftStatus = 'active';
-  status.value.movingDirection = targetFloor > status.value.currentFloor 
+  status.liftStatus = 'active';
+  status.movingDirection = targetFloor > status.currentFloor 
     ? 'up' : 'down';
-  status.value.nextFloor = targetFloor;
+  status.nextFloor = targetFloor;
 
-  moveLift(status.value.currentFloor, targetFloor);
+  moveLift(status.currentFloor, targetFloor);
 }
 
 const handleTransition = (e) => {
   switch(true) {
     case e.propertyName === 'bottom':
-      status.value.liftStatus = 'recharge';
+      status.liftStatus = 'recharge';
       break;
     case e.animationName === 'blink-eb80ee3d':
-      status.value.currentFloor = status.value.nextFloor;
-      status.value.nextFloor = null;
-      queue.deleteFromQueue(status.value.currentFloor); 
-      status.value.liftStatus = 'idle';      
+      status.currentFloor = status.nextFloor;
+      status.nextFloor = null;
+      queue.deleteFromQueue(status.currentFloor); 
+      status.liftStatus = 'idle';      
       break;
   }
 }
 
-provide('nextFloor', status.value.nextFloor);
-provide('movingDirection', status.value.movingDirection);
-provide('liftStatus', status.value.liftStatus);
+provide('status', status);
 
 
 </script>
