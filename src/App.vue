@@ -4,7 +4,7 @@
       <Floor
         v-for="floor, index in floors" :key="index"
         :floorNumber="floor"
-        @call="moveLift(1, 3)"
+        @call="handleCall(floor)"
       >
       </Floor>
       <Lift :style="lift" class="floors__lift"></Lift>
@@ -17,35 +17,73 @@
 import Floor from '@/components/Floor/Floor.vue';
 import Lift from '@/components/Lift/Lift.vue';
 
-import { ref, provide } from 'vue';
+import { ref, provide, computed, watchEffect } from 'vue';
 
-//* Set the amount of floors
+// Set the amount of floors
 const amountOfFloors = 5;
 const floors = Array.from({length: amountOfFloors}, (_, index) => index + 1).reverse();
-
-const lift = ref({
-  transform: 'translateY(0px)'
-});
+// Floor height in px
+const floorHeight = 200;
+// Lift recharge timer in ms
+const rechargeTimer = 3000;
 
 const status = ref({
   currentFloor: 1,
+  currentPosition: 0,
   nextFloor: null,
   movingDirection: null,
+  operationTime: 0,
   liftStatus: 'idle',
+});
+
+const lift = computed(() => {
+  return {
+    bottom: status.value.currentPosition,
+    transition: `bottom ${status.value.operationTime}s linear`
+  }
 });
 
 const queue = new Set();
 
+watchEffect(() => {
+  if (status.value.liftStatus === 'active') {
+    setTimeout(() => {
+      status.value.liftStatus = 'recharge';
+      status.value.currentFloor = status.value.nextFloor;
+      console.log(status.value.liftStatus);
+    }, status.value.operationTime * 1000);
+  }
+
+  //! Сюда добавить условие, что очередь пустая 
+  if (status.value.liftStatus === 'recharge') {
+    setTimeout(() => {
+      status.value.liftStatus = 'idle';
+      console.log(status.value.liftStatus);
+    }, rechargeTimer);
+  }
+});
+
+/* =============
+  Functions
+============= */
+
 const moveLift = (currentFloor, targetFloor) => {
-  // Set floor height in px
-  const floorHeight = 200;
-
-  const floorDifference = targetFloor - currentFloor;
-  const distance = floorDifference * floorHeight;
-
+  // Floor difference always must be positive
+  const floorDifference = Math.abs(targetFloor - currentFloor);
   // 1 floor per second
-  lift.value.transition = `transform ${floorDifference}s linear`;
-  lift.value.transform = `translateY(-${distance}px)`;
+  status.value.operationTime = floorDifference;
+  // Lift positioning
+  status.value.currentPosition = `${(targetFloor - 1) * floorHeight}px`;
+}
+
+const handleCall = (targetFloor) => {
+  status.value.liftStatus = 'active';
+  status.value.movingDirection = targetFloor > status.value.currentFloor 
+    ? 'up' : 'down';
+  status.value.nextFloor = targetFloor;
+
+  moveLift(status.value.currentFloor, targetFloor);
+  status.value.nextFloor = targetFloor;
 }
 
 provide('nextFloor', status.value.nextFloor);
