@@ -7,7 +7,15 @@
         @call="queue.addToQueue(floor)"
       >
       </Floor>
-      <Lift :style="lift" class="floors__lift" @transitionend="handleTransition"></Lift>
+      <Lift
+        @transitionend="handleTransition"
+        @animationend="handleTransition" 
+        :style="lift" 
+        :class="[
+          'floors__lift',
+          { 'blink': status.liftStatus === 'recharge' }
+        ]" 
+      ></Lift>
     </div>
   </main>
 </template>
@@ -25,8 +33,8 @@ class Queue {
   }
 
   addToQueue(item) {
+    if (this.queue.has(item)) return;
     this.queue.add(item);
-    // console.log(this.queue);
   }
 
   deleteFromQueue(item) {
@@ -43,8 +51,6 @@ const amountOfFloors = 5;
 const floors = Array.from({length: amountOfFloors}, (_, index) => index + 1).reverse();
 // Floor height in px
 const floorHeight = 200;
-// Lift recharge timer in ms
-const rechargeTimer = 1000;
 
 const status = ref({
   currentFloor: 1,
@@ -55,11 +61,7 @@ const status = ref({
   liftStatus: 'idle',
 });
 
-// const queue = ref(null);
-// queue.value = new Queue();
-
 const queue = reactive(new Queue());
-
 
 const lift = computed(() => {
   return {
@@ -69,28 +71,14 @@ const lift = computed(() => {
 });
 
 watchEffect(() => {
-  if (status.value.liftStatus === 'active') {
-    activeTimeout();
-  }
-
-  //! Сюда добавить условие, что очередь пустая (или нет)
-  if (status.value.liftStatus === 'recharge') {
-    rechargeTimeout();
-  }
-
   if (!queue.queueIsEmpty() && status.value.liftStatus === 'idle') {
-    // console.log('move')
     const iterator = queue.queue.values();
     const next = iterator.next();
 
-    // console.log(next.value);
-
     if (!next.done) {
       handleCall(next.value);
-      queue.queue.delete(next.value); 
     }
   }
-
 });
 
 /* =============
@@ -107,45 +95,31 @@ const moveLift = (currentFloor, targetFloor) => {
 }
 
 const handleCall = (targetFloor) => {
-  // queue.value.add(targetFloor);
-
-  // if (status.value.liftStatus !== 'idle') return;
+  if (targetFloor === status.value.currentFloor) {
+    queue.deleteFromQueue(targetFloor);
+    return;
+  };
 
   status.value.liftStatus = 'active';
   status.value.movingDirection = targetFloor > status.value.currentFloor 
     ? 'up' : 'down';
   status.value.nextFloor = targetFloor;
 
-  status.value.nextFloor = targetFloor;
   moveLift(status.value.currentFloor, targetFloor);
-
-  // console.log(status.value.operationTime);
-  // console.log(status.value.liftStatus);
 }
 
 const handleTransition = (e) => {
   switch(true) {
     case e.propertyName === 'bottom':
-      console.log('bottom');
+      status.value.liftStatus = 'recharge';
       break;
-    case e.propertyName === 'opacity':
-      console.log('opacity');
+    case e.animationName === 'blink-eb80ee3d':
+      status.value.currentFloor = status.value.nextFloor;
+      status.value.nextFloor = null;
+      queue.deleteFromQueue(status.value.currentFloor); 
+      status.value.liftStatus = 'idle';      
+      break;
   }
-}
-
-const activeTimeout = () => {
-  setTimeout(() => {
-    status.value.liftStatus = 'recharge';
-    status.value.currentFloor = status.value.nextFloor;
-    console.log(status.value.liftStatus);
-  }, status.value.operationTime * 1000);
-}
-
-const rechargeTimeout = () => {
-  setTimeout(() => {
-    status.value.liftStatus = 'idle';
-    console.log(status.value.liftStatus);
-  }, rechargeTimer);
 }
 
 provide('nextFloor', status.value.nextFloor);
