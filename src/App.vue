@@ -4,7 +4,7 @@
       <Floor
         v-for="floor, index in floors" :key="index"
         :floorNumber="floor"
-        @call="handleCall(floor)"
+        @call="queue.addToQueue(floor)"
       >
       </Floor>
       <Lift :style="lift" class="floors__lift"></Lift>
@@ -17,7 +17,26 @@
 import Floor from '@/components/Floor/Floor.vue';
 import Lift from '@/components/Lift/Lift.vue';
 
-import { ref, provide, computed, watchEffect } from 'vue';
+import { ref, reactive, provide, computed, watchEffect } from 'vue';
+
+class Queue {
+  constructor() {
+    this.queue = reactive(new Set());
+  }
+
+  addToQueue(item) {
+    this.queue.add(item);
+    console.log(this.queue);
+  }
+
+  deleteFromQueue(item) {
+    this.queue.delete(item);
+  }
+
+  queueIsEmpty() {
+    return this.queue.size === 0;
+  }
+}
 
 // Set the amount of floors
 const amountOfFloors = 5;
@@ -25,7 +44,7 @@ const floors = Array.from({length: amountOfFloors}, (_, index) => index + 1).rev
 // Floor height in px
 const floorHeight = 200;
 // Lift recharge timer in ms
-const rechargeTimer = 3000;
+const rechargeTimer = 1000;
 
 const status = ref({
   currentFloor: 1,
@@ -36,6 +55,12 @@ const status = ref({
   liftStatus: 'idle',
 });
 
+// const queue = ref(null);
+// queue.value = new Queue();
+
+const queue = reactive(new Queue());
+
+
 const lift = computed(() => {
   return {
     bottom: status.value.currentPosition,
@@ -45,41 +70,32 @@ const lift = computed(() => {
 
 watchEffect(() => {
   if (status.value.liftStatus === 'active') {
-    setTimeout(() => {
-      status.value.liftStatus = 'recharge';
-      status.value.currentFloor = status.value.nextFloor;
-      console.log(status.value.liftStatus);
-    }, status.value.operationTime * 1000);
+    activeTimeout();
   }
 
-  //! Сюда добавить условие, что очередь пустая 
+  //! Сюда добавить условие, что очередь пустая (или нет)
   if (status.value.liftStatus === 'recharge') {
-    setTimeout(() => {
-      status.value.liftStatus = 'idle';
-      console.log(status.value.liftStatus);
-    }, rechargeTimer);
+    rechargeTimeout();
   }
+
+  if (!queue.queueIsEmpty() && status.value.liftStatus === 'idle') {
+    // console.log('move')
+    const iterator = queue.queue.values();
+    const next = iterator.next();
+
+    // console.log(next.value);
+
+    if (!next.done) {
+      handleCall(next.value);
+      queue.queue.delete(next.value); 
+    }
+  }
+
 });
 
 /* =============
   Functions
 ============= */
-
-class Queue {
-  constructor() {
-    this.queue = new Set();
-  }
-
-  addToQueue(item) {
-    this.queue.add(item);
-  }
-
-  deleteFromQueue(item) {
-    this.queue.delete(item);
-  }
-}
-
-const queue = new Queue();
 
 const moveLift = (currentFloor, targetFloor) => {
   // Floor difference always must be positive
@@ -91,6 +107,10 @@ const moveLift = (currentFloor, targetFloor) => {
 }
 
 const handleCall = (targetFloor) => {
+  // queue.value.add(targetFloor);
+
+  // if (status.value.liftStatus !== 'idle') return;
+
   status.value.liftStatus = 'active';
   status.value.movingDirection = targetFloor > status.value.currentFloor 
     ? 'up' : 'down';
@@ -98,6 +118,24 @@ const handleCall = (targetFloor) => {
 
   status.value.nextFloor = targetFloor;
   moveLift(status.value.currentFloor, targetFloor);
+
+  // console.log(status.value.operationTime);
+  // console.log(status.value.liftStatus);
+}
+
+const activeTimeout = () => {
+  setTimeout(() => {
+    status.value.liftStatus = 'recharge';
+    status.value.currentFloor = status.value.nextFloor;
+    console.log(status.value.liftStatus);
+  }, status.value.operationTime * 1000);
+}
+
+const rechargeTimeout = () => {
+  setTimeout(() => {
+    status.value.liftStatus = 'idle';
+    console.log(status.value.liftStatus);
+  }, rechargeTimer);
 }
 
 provide('nextFloor', status.value.nextFloor);
