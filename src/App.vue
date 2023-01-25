@@ -26,7 +26,14 @@
 import Floor from '@/components/Floor/Floor.vue';
 import Lift from '@/components/Lift/Lift.vue';
 
-import { reactive, provide, computed, watchEffect, onMounted } from 'vue';
+import { 
+  reactive, 
+  provide, 
+  computed, 
+  watchEffect, 
+  onMounted, 
+  watch 
+} from 'vue';
 
 class Queue {
   constructor() {
@@ -60,7 +67,7 @@ const status = reactive({
   movingDirection: null,
   operationTime: 0,
   liftStatus: 'idle',
-  floorCalled: {}
+  floorCalled: {},
 });
 
 const queue = reactive(new Queue());
@@ -74,8 +81,15 @@ const lift = computed(() => {
 
 onMounted(() => {
   // Set initial floorCalled values
-  for (let i = 0; i < amountOfFloors; i++) {
-    status.floorCalled[i + 1] = false;
+  if (Object.keys(status.floorCalled) === 0) {
+    for (let i = 0; i < amountOfFloors; i++) {
+      status.floorCalled[i + 1] = false;
+    }
+  }
+
+  const storedStatus = localStorage.getItem('status');
+  if (storedStatus) {
+    Object.assign(status, JSON.parse(storedStatus));
   }
 });
 
@@ -89,6 +103,10 @@ watchEffect(() => {
     }
   }
 });
+
+watch(status, (newVal, oldVal) => {
+  localStorage.setItem('status', JSON.stringify(newVal));
+}, {deep: true});
 
 /* =============
   Functions
