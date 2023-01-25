@@ -20,7 +20,8 @@ import Lift from '@/components/Lift/Lift.vue';
 import { ref, provide } from 'vue';
 
 //* Set the amount of floors
-const floors = Array.from({length: 5}, (_, index) => index + 1).reverse();
+const amountOfFloors = 5;
+const floors = Array.from({length: amountOfFloors}, (_, index) => index + 1).reverse();
 
 const lift = ref({
   transform: 'translateY(0px)'
