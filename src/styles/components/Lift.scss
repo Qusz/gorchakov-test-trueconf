@@ -11,4 +11,17 @@
     &__indicator {
       margin: 20px auto 0 auto;
     }
+
+    &.blik {
+      animation: blink 3s 3;
+    }
+}
+
+@keyframes blink {
+  0% {
+    opacity: .1;
+  }
+  100% {
+    opacity: 1;
+  }
 }
