@@ -4,12 +4,13 @@
       <Floor
         v-for="floor, index in floors" :key="index"
         :floorNumber="floor"
-        @call="queue.addToQueue(floor)"
+        :floorStatus="status.floorCalled[floor]" 
+        @call="queue.addToQueue(floor); changeFloorStatus(floor, true)"
       >
       </Floor>
       <Lift
         @transitionend="handleTransition"
-        @animationend="handleTransition" 
+        @animationend="handleTransition"
         :style="lift" 
         :class="[
           'floors__lift',
@@ -25,7 +26,7 @@
 import Floor from '@/components/Floor/Floor.vue';
 import Lift from '@/components/Lift/Lift.vue';
 
-import { ref, reactive, provide, computed, watchEffect } from 'vue';
+import { reactive, provide, computed, watchEffect, onMounted } from 'vue';
 
 class Queue {
   constructor() {
@@ -59,6 +60,7 @@ const status = reactive({
   movingDirection: null,
   operationTime: 0,
   liftStatus: 'idle',
+  floorCalled: {}
 });
 
 const queue = reactive(new Queue());
@@ -67,6 +69,13 @@ const lift = computed(() => {
   return {
     bottom: status.currentPosition,
     transition: `bottom ${status.operationTime}s linear`
+  }
+});
+
+onMounted(() => {
+  // Set initial floorCalled values
+  for (let i = 0; i < amountOfFloors; i++) {
+    status.floorCalled[i + 1] = false;
   }
 });
 
@@ -117,10 +126,15 @@ const handleTransition = (e) => {
       status.currentFloor = status.nextFloor;
       status.nextFloor = null;
       status.movingDirection = null;
-      queue.deleteFromQueue(status.currentFloor); 
+      queue.deleteFromQueue(status.currentFloor);
+      changeFloorStatus(status.currentFloor, false); 
       status.liftStatus = 'idle';      
       break;
   }
+}
+
+const changeFloorStatus = (key, value) => {
+  status.floorCalled[key] = value;
 }
 
 provide('status', status);
