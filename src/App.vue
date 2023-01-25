@@ -43,8 +43,6 @@ const lift = computed(() => {
   }
 });
 
-const queue = new Set();
-
 watchEffect(() => {
   if (status.value.liftStatus === 'active') {
     setTimeout(() => {
@@ -67,6 +65,22 @@ watchEffect(() => {
   Functions
 ============= */
 
+class Queue {
+  constructor() {
+    this.queue = new Set();
+  }
+
+  addToQueue(item) {
+    this.queue.add(item);
+  }
+
+  deleteFromQueue(item) {
+    this.queue.delete(item);
+  }
+}
+
+const queue = new Queue();
+
 const moveLift = (currentFloor, targetFloor) => {
   // Floor difference always must be positive
   const floorDifference = Math.abs(targetFloor - currentFloor);
@@ -82,8 +96,8 @@ const handleCall = (targetFloor) => {
     ? 'up' : 'down';
   status.value.nextFloor = targetFloor;
 
-  moveLift(status.value.currentFloor, targetFloor);
   status.value.nextFloor = targetFloor;
+  moveLift(status.value.currentFloor, targetFloor);
 }
 
 provide('nextFloor', status.value.nextFloor);
