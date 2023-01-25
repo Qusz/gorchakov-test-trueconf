@@ -116,6 +116,7 @@ const handleTransition = (e) => {
     case e.animationName === 'blink-eb80ee3d':
       status.currentFloor = status.nextFloor;
       status.nextFloor = null;
+      status.movingDirection = null;
       queue.deleteFromQueue(status.currentFloor); 
       status.liftStatus = 'idle';      
       break;
