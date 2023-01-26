@@ -39,8 +39,6 @@ import {
   computed, 
   watchEffect, 
   onMounted, 
-  watch,
-  reactive, 
 } from 'vue';
 
 // Set the amount of floors
@@ -68,14 +66,6 @@ const liftAnimations = computed(() => {
 
 const queue = ref(new Queue());
 const isMounted = ref(false);
-
-watch(status.value, (newVal, oldVal) => {
-  writeToLocalStorage('status', newVal);
-}, {deep: true});
-
-watch(queue.value, (newVal, oldVal) => {
-  writeToLocalStorage('queue', newVal);
-}, {deep: true});
 
 /* =============
   Functions
@@ -145,8 +135,13 @@ const handleQueue = () => {
 }
 
 watchEffect(() => {
+  // To make sure onMounted logic runs first
   if (!isMounted.value) return;
+
   handleQueue();
+
+  writeToLocalStorage('status', status.value);
+  writeToLocalStorage('queue', queue.value);
 });
 
 onMounted(() => {
