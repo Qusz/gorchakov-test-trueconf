@@ -173,15 +173,7 @@ onMounted(() => {
     }
   }
   
-  const storedStatus = readFromLocalStorage('status');
-  if (storedStatus) {
-    Object.assign(status.value, JSON.parse(storedStatus));
-  }
-  
-  const storedQueue = readFromLocalStorage('queue');
-  if (storedQueue) {
-    Object.assign(queue.value, JSON.parse(storedQueue));
-  }
+  handleLocalStorage();
 
   if (status.value.liftStatus === 'active') {
     status.value.currentFloor = status.value.nextFloor;
@@ -194,6 +186,18 @@ onMounted(() => {
 const queueIterator = function* (arr) {
   for (let i = 0; i < arr.length; i++) {
     yield arr[i];
+  }
+}
+
+const handleLocalStorage = () => {
+  const storedStatus = readFromLocalStorage('status');
+  if (storedStatus) {
+    Object.assign(status.value, JSON.parse(storedStatus));
+  }
+  
+  const storedQueue = readFromLocalStorage('queue');
+  if (storedQueue) {
+    Object.assign(queue.value, JSON.parse(storedQueue));
   }
 }
 
