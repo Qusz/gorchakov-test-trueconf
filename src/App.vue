@@ -38,7 +38,8 @@ import {
   provide, 
   computed, 
   watchEffect, 
-  onMounted, 
+  onMounted,
+  readonly  
 } from 'vue';
 
 /* ================
@@ -196,7 +197,7 @@ const handleTransition = (e) => {
   }
 }
 
-provide('status', status.value);
+provide('status', readonly(status.value));
 
 </script>
 
