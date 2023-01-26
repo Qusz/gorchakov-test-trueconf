@@ -27,6 +27,8 @@
 import Floor from '@/components/Floor/Floor.vue';
 import Lift from '@/components/Lift/Lift.vue';
 
+import { writeToLocalStorage, readFromLocalStorage } from '@/utils/localStorage.js';
+
 import { 
   ref, 
   provide, 
@@ -84,11 +86,11 @@ const queue = ref(new Queue());
 const isMounted = ref(false);
 
 watch(status.value, (newVal, oldVal) => {
-  localStorage.setItem('status', JSON.stringify(newVal));
+  writeToLocalStorage('status', newVal);
 }, {deep: true});
 
 watch(queue.value, (newVal, oldVal) => {
-  localStorage.setItem('queue', JSON.stringify(newVal));
+  writeToLocalStorage('queue', newVal);
 }, {deep: true});
 
 /* =============
@@ -170,13 +172,13 @@ onMounted(() => {
       status.value.floorCalled[i + 1] = false;
     }
   }
-
-  const storedStatus = localStorage.getItem('status');
+  
+  const storedStatus = readFromLocalStorage('status');
   if (storedStatus) {
     Object.assign(status.value, JSON.parse(storedStatus));
   }
-
-  const storedQueue = localStorage.getItem('queue');
+  
+  const storedQueue = readFromLocalStorage('queue');
   if (storedQueue) {
     Object.assign(queue.value, JSON.parse(storedQueue));
   }
