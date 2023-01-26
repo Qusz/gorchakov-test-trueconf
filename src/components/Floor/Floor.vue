@@ -19,7 +19,6 @@
 
 <script setup>
 
-import { defineProps } from 'vue';
 import FloorCallButton from './FloorCallButton.vue';
 
 const props = defineProps({
