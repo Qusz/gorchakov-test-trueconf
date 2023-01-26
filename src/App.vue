@@ -32,6 +32,7 @@ import {
   readFromLocalStorage 
 } from '@/utils/localStorage.js';
 import Queue from '@/utils/queueHandling.js';
+import queueIterator from '@/utils/generator.js'
 
 import { 
   ref, 
@@ -134,12 +135,6 @@ const jobComplete = () => {
 
   status.value.liftStatus = 'idle';
   changeFloorStatus(status.value.currentFloor, false);
-}
-
-const queueIterator = function* (arr) {
-  for (let i = 0; i < arr.length; i++) {
-    yield arr[i];
-  }
 }
 
 const handleQueue = () => {
