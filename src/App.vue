@@ -98,6 +98,10 @@ onMounted(() => {
   if (storedQueue) {
     Object.assign(status.value, JSON.parse(storedQueue));
   }
+
+  if (status.value.liftStatus !== 'idle') {
+    complete();
+  }
 });
 
 watchEffect(() => {
@@ -146,6 +150,7 @@ const handleCall = (targetFloor) => {
   moveLift(status.value.currentFloor, targetFloor);
   changeFloorStatus(status.value.currentFloor, false);
   status.value.currentFloor = status.value.nextFloor;
+  queue.value.deleteFromQueue(status.value.currentFloor);
 }
 
 const handleTransition = (e) => {
@@ -154,11 +159,7 @@ const handleTransition = (e) => {
       status.value.liftStatus = 'recharge';
       break;
     case e.animationName === 'blink-eb80ee3d':
-      changeFloorStatus(status.value.currentFloor, false);
-      status.value.nextFloor = null;
-      status.value.movingDirection = null;
-      queue.value.deleteFromQueue(status.value.currentFloor);
-      status.value.liftStatus = 'idle';      
+      complete();
       break;
   }
 }
@@ -167,6 +168,13 @@ const changeFloorStatus = (floor, value) => {
   // To prevent status change if the lift is already on the floor
   if (value === true && floor === status.value.currentFloor) return;
   status.value.floorCalled[floor] = value;
+}
+
+const complete = () => {
+  changeFloorStatus(status.value.currentFloor, false);
+  status.value.nextFloor = null;
+  status.value.movingDirection = null;
+  status.value.liftStatus = 'idle';  
 }
 
 provide('status', status.value);
