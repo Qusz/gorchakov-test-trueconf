@@ -92,6 +92,11 @@ onMounted(() => {
   if (storedStatus) {
     Object.assign(status, JSON.parse(storedStatus));
   }
+
+  const storedQueue = localStorage.getItem('queue');
+  if (storedQueue) {
+    Object.assign(status, JSON.parse(storedQueue));
+  }
 });
 
 watchEffect(() => {
@@ -107,6 +112,10 @@ watchEffect(() => {
 
 watch(status, (newVal, oldVal) => {
   localStorage.setItem('status', JSON.stringify(newVal));
+}, {deep: true});
+
+watch(queue, (newVal, oldVal) => {
+  localStorage.setItem('queue', JSON.stringify(newVal));
 }, {deep: true});
 
 /* =============
