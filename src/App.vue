@@ -174,11 +174,7 @@ onMounted(() => {
   }
   
   handleLocalStorage();
-
-  if (status.value.liftStatus === 'active') {
-    status.value.currentFloor = status.value.nextFloor;
-    status.value.liftStatus = 'recharge';
-  }
+  handlePageRefresh();
 
   isMounted.value = true;
 });
@@ -198,6 +194,13 @@ const handleLocalStorage = () => {
   const storedQueue = readFromLocalStorage('queue');
   if (storedQueue) {
     Object.assign(queue.value, JSON.parse(storedQueue));
+  }
+}
+
+const handlePageRefresh = () => {
+  if (status.value.liftStatus === 'active') {
+    status.value.currentFloor = status.value.nextFloor;
+    status.value.liftStatus = 'recharge';
   }
 }
 
