@@ -3,7 +3,7 @@
 .floor {
   height: $floor-height;
 
-  border-top: 1px solid blue;
+  border-top: 2px solid $clr-black;
 
     &__wrapper {
       display: grid;
