@@ -183,11 +183,14 @@ const handlePageRefresh = () => {
 }
 
 const handleTransition = (e) => {
+  // To match event animationName hashed by the browser
+  const blinkAnimationName = /blink/;
+
   switch(true) {
     case e.propertyName === 'bottom':
       status.value.liftStatus = 'recharge';
       break;
-    case e.animationName === 'blink-eb80ee3d':
+    case blinkAnimationName.test(e.animationName):
       jobComplete();
       break;
   }
