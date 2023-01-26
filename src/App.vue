@@ -9,7 +9,6 @@
       >
       </Floor>
       <Lift
-        ref="lift"
         @transitionend="handleTransition"
         @animationend="handleTransition"
         :style="liftAnimations" 
