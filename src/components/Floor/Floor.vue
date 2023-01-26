@@ -30,5 +30,5 @@ const props = defineProps({
 </script>
 
 <style lang="scss" scoped>
-  @use '@/styles/components/Floor.scss' as *;
+  @use '@/styles/components/Floor/Floor.scss' as *;
 </style>

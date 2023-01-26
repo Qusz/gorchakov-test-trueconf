@@ -7,42 +7,5 @@
 <script setup></script>
 
 <style lang="scss" scoped>
-
-@use '@/styles/base' as *;
-
-.floor-call-button {
-  cursor: pointer;
-  transition: all .1s ease-out;
-
-  border: 2px solid $clr-primary;
-  border-radius: 5px;
-  width: 25px;
-  height: 25px;
-
-  display: inline-grid;
-  place-items: center;
-
-    &__inside {
-      width: 10px;
-      height: 10px;
-      background-color: $clr-primary;
-      border-radius: 100%;
-
-      transition: all .1s ease-out;
-    }
-
-    &:hover,
-    &.is-active {
-      border-color: $clr-accent;
-
-      .floor-call-button__inside {
-        background-color: $clr-accent;
-      }
-    }
-
-    &:active {
-      background-color: rgba(255, 255, 255, .2);
-    }
-}
-
+  @use '@/styles/components/Floor/FloorCallButton.scss';
 </style>

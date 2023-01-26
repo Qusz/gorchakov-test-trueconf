@@ -1,4 +1,4 @@
-@use '../base/' as *;
+@use '@/styles/base/' as *;
 
 .floor {
   height: $floor-height;
@@ -10,7 +10,6 @@
       grid-template-columns: $shaft-width 1fr;
 
       height: 100%;
-
     }
 
     &__shaft {
