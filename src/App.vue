@@ -37,20 +37,21 @@ import {
 
 class Queue {
   constructor() {
-    this.queue = reactive(new Set());
+    this.queue = reactive([]);
   }
 
   addToQueue(item) {
-    if (this.queue.has(item)) return;
-    this.queue.add(item);
+    if (this.queue.includes(item)) return;
+    this.queue.push(item);
   }
 
   deleteFromQueue(item) {
-    this.queue.delete(item);
+    const itemIndex = this.queue.indexOf(item);
+    this.queue.splice(itemIndex, 1)
   }
 
   queueIsEmpty() {
-    return this.queue.size === 0;
+    return this.queue.length === 0;
   }
 }
 
@@ -81,7 +82,7 @@ const lift = computed(() => {
 
 onMounted(() => {
   // Set initial floorCalled values
-  if (Object.keys(status.floorCalled) === 0) {
+  if (Object.keys(status.floorCalled).length === 0) {
     for (let i = 0; i < amountOfFloors; i++) {
       status.floorCalled[i + 1] = false;
     }
@@ -133,6 +134,8 @@ const handleCall = (targetFloor) => {
   status.nextFloor = targetFloor;
 
   moveLift(status.currentFloor, targetFloor);
+  changeFloorStatus(status.currentFloor, false);
+  status.currentFloor = status.nextFloor;
 }
 
 const handleTransition = (e) => {
@@ -141,18 +144,19 @@ const handleTransition = (e) => {
       status.liftStatus = 'recharge';
       break;
     case e.animationName === 'blink-eb80ee3d':
-      status.currentFloor = status.nextFloor;
+      changeFloorStatus(status.currentFloor, false);
       status.nextFloor = null;
       status.movingDirection = null;
       queue.deleteFromQueue(status.currentFloor);
-      changeFloorStatus(status.currentFloor, false); 
       status.liftStatus = 'idle';      
       break;
   }
 }
 
-const changeFloorStatus = (key, value) => {
-  status.floorCalled[key] = value;
+const changeFloorStatus = (floor, value) => {
+  // To prevent status change if the lift is already on the floor
+  if (value === true && floor === status.currentFloor) return;
+  status.floorCalled[floor] = value;
 }
 
 provide('status', status);
