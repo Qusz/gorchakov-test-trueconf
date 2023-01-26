@@ -12,5 +12,5 @@ import LiftIndicator from './LiftIndicator.vue';
 </script>
 
 <style lang="scss" scoped>
-  @use '@/styles/components/Lift.scss' as *;
+  @use '@/styles/components/Lift/Lift.scss' as *;
 </style>
