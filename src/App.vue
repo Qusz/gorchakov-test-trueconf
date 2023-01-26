@@ -27,12 +27,13 @@ import Floor from '@/components/Floor/Floor.vue';
 import Lift from '@/components/Lift/Lift.vue';
 
 import { 
-  reactive, 
+  ref, 
   provide, 
   computed, 
   watchEffect, 
   onMounted, 
-  watch 
+  watch,
+  reactive 
 } from 'vue';
 
 class Queue {
@@ -61,7 +62,7 @@ const floors = Array.from({length: amountOfFloors}, (_, index) => index + 1).rev
 // Floor height in px
 const floorHeight = 200;
 
-const status = reactive({
+const status = ref({
   currentFloor: 1,
   currentPosition: 0,
   nextFloor: null,
@@ -71,37 +72,37 @@ const status = reactive({
   floorCalled: {},
 });
 
-const queue = reactive(new Queue());
+const queue = ref(new Queue());
 
 const lift = computed(() => {
   return {
-    bottom: status.currentPosition,
-    transition: `bottom ${status.operationTime}s linear`
+    bottom: status.value.currentPosition,
+    transition: `bottom ${status.value.operationTime}s linear`
   }
 });
 
 onMounted(() => {
   // Set initial floorCalled values
-  if (Object.keys(status.floorCalled).length === 0) {
+  if (Object.keys(status.value.floorCalled).length === 0) {
     for (let i = 0; i < amountOfFloors; i++) {
-      status.floorCalled[i + 1] = false;
+      status.value.floorCalled[i + 1] = false;
     }
   }
 
   const storedStatus = localStorage.getItem('status');
   if (storedStatus) {
-    Object.assign(status, JSON.parse(storedStatus));
+    Object.assign(status.value, JSON.parse(storedStatus));
   }
 
   const storedQueue = localStorage.getItem('queue');
   if (storedQueue) {
-    Object.assign(status, JSON.parse(storedQueue));
+    Object.assign(status.value, JSON.parse(storedQueue));
   }
 });
 
 watchEffect(() => {
-  if (!queue.queueIsEmpty() && status.liftStatus === 'idle') {
-    const iterator = queue.queue.values();
+  if (!queue.value.queueIsEmpty() && status.value.liftStatus === 'idle') {
+    const iterator = queue.value.queue.values();
     const next = iterator.next();
 
     if (!next.done) {
@@ -110,11 +111,11 @@ watchEffect(() => {
   }
 });
 
-watch(status, (newVal, oldVal) => {
+watch(status.value, (newVal, oldVal) => {
   localStorage.setItem('status', JSON.stringify(newVal));
 }, {deep: true});
 
-watch(queue, (newVal, oldVal) => {
+watch(queue.value, (newVal, oldVal) => {
   localStorage.setItem('queue', JSON.stringify(newVal));
 }, {deep: true});
 
@@ -126,49 +127,49 @@ const moveLift = (currentFloor, targetFloor) => {
   // Floor difference always must be positive
   const floorDifference = Math.abs(targetFloor - currentFloor);
   // 1 floor per second
-  status.operationTime = floorDifference;
+  status.value.operationTime = floorDifference;
   // Lift positioning
-  status.currentPosition = `${(targetFloor - 1) * floorHeight}px`;
+  status.value.currentPosition = `${(targetFloor - 1) * floorHeight}px`;
 }
 
 const handleCall = (targetFloor) => {
-  if (targetFloor === status.currentFloor) {
-    queue.deleteFromQueue(targetFloor);
+  if (targetFloor === status.value.currentFloor) {
+    queue.value.deleteFromQueue(targetFloor);
     return;
   };
 
-  status.liftStatus = 'active';
-  status.movingDirection = targetFloor > status.currentFloor 
+  status.value.liftStatus = 'active';
+  status.value.movingDirection = targetFloor > status.value.currentFloor 
     ? 'up' : 'down';
-  status.nextFloor = targetFloor;
+  status.value.nextFloor = targetFloor;
 
-  moveLift(status.currentFloor, targetFloor);
-  changeFloorStatus(status.currentFloor, false);
-  status.currentFloor = status.nextFloor;
+  moveLift(status.value.currentFloor, targetFloor);
+  changeFloorStatus(status.value.currentFloor, false);
+  status.value.currentFloor = status.value.nextFloor;
 }
 
 const handleTransition = (e) => {
   switch(true) {
     case e.propertyName === 'bottom':
-      status.liftStatus = 'recharge';
+      status.value.liftStatus = 'recharge';
       break;
     case e.animationName === 'blink-eb80ee3d':
-      changeFloorStatus(status.currentFloor, false);
-      status.nextFloor = null;
-      status.movingDirection = null;
-      queue.deleteFromQueue(status.currentFloor);
-      status.liftStatus = 'idle';      
+      changeFloorStatus(status.value.currentFloor, false);
+      status.value.nextFloor = null;
+      status.value.movingDirection = null;
+      queue.value.deleteFromQueue(status.value.currentFloor);
+      status.value.liftStatus = 'idle';      
       break;
   }
 }
 
 const changeFloorStatus = (floor, value) => {
   // To prevent status change if the lift is already on the floor
-  if (value === true && floor === status.currentFloor) return;
-  status.floorCalled[floor] = value;
+  if (value === true && floor === status.value.currentFloor) return;
+  status.value.floorCalled[floor] = value;
 }
 
-provide('status', status);
+provide('status', status.value);
 
 
 </script>
