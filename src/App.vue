@@ -101,7 +101,7 @@ const handleTransition = (e) => {
       status.value.liftStatus = 'recharge';
       break;
     case e.animationName === 'blink-eb80ee3d':
-      complete();
+      jobComplete();
       break;
   }
 }
@@ -112,14 +112,14 @@ const changeFloorStatus = (floor, value) => {
   status.value.floorCalled[floor] = value;
 }
 
-const complete = () => {
+const jobComplete = () => {
   queue.value.deleteFromQueue(status.value.nextFloor);
 
   status.value.nextFloor = null;
   status.value.movingDirection = null;
-
-  status.value.liftStatus = 'idle';
   status.value.operationTime = null;
+  
+  status.value.liftStatus = 'idle';
   changeFloorStatus(status.value.currentFloor, false);
 }
 
